@@ -58,6 +58,7 @@ class Story extends StatefulWidget {
     this.fullscreen = true,
     this.progressSegmentHeight = 2.0,
     this.progressSegmentBorderRadius = 1.0,
+    this.progressSegmentPadding = EdgeInsets.zero,
   })  : assert(momentCount > 0),
         assert(momentSwitcherFraction >= 0),
         assert(momentSwitcherFraction < double.infinity),
@@ -120,6 +121,11 @@ class Story extends StatefulWidget {
   /// Sets the border radius of each progress segment
   ///
   final double progressSegmentBorderRadius;
+
+  ///
+  /// Sets the border radius of each progress segment
+  ///
+  final EdgeInsets progressSegmentPadding;
 
   ///
   /// Sets the duration for the progress bar show/hide animation
@@ -286,36 +292,39 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
           child: AnimatedOpacity(
             opacity: _isInFullscreenMode ? 0.0 : 1.0,
             duration: widget.progressOpacityDuration,
-            child: Row(
-              children: <Widget>[
-                ...List.generate(
-                  widget.momentCount,
-                  (idx) {
-                    return Expanded(
-                      child: idx == _currentIdx
-                          ? AnimatedBuilder(
-                              animation: _controller,
-                              builder: (context, _) {
-                                return widget.progressSegmentBuilder(
-                                    context,
-                                    idx,
-                                    _controller.value,
-                                    widget.progressSegmentGap,
-                                    widget.progressSegmentHeight,
-                                    widget.progressSegmentBorderRadius);
-                              },
-                            )
-                          : widget.progressSegmentBuilder(
-                              context,
-                              idx,
-                              idx < _currentIdx ? 1.0 : 0.0,
-                              widget.progressSegmentGap,
-                              widget.progressSegmentHeight,
-                              widget.progressSegmentBorderRadius),
-                    );
-                  },
-                )
-              ],
+            child: Padding(
+              padding: widget.progressSegmentPadding,
+              child: Row(
+                children: <Widget>[
+                  ...List.generate(
+                    widget.momentCount,
+                    (idx) {
+                      return Expanded(
+                        child: idx == _currentIdx
+                            ? AnimatedBuilder(
+                                animation: _controller,
+                                builder: (context, _) {
+                                  return widget.progressSegmentBuilder(
+                                      context,
+                                      idx,
+                                      _controller.value,
+                                      widget.progressSegmentGap,
+                                      widget.progressSegmentHeight,
+                                      widget.progressSegmentBorderRadius);
+                                },
+                              )
+                            : widget.progressSegmentBuilder(
+                                context,
+                                idx,
+                                idx < _currentIdx ? 1.0 : 0.0,
+                                widget.progressSegmentGap,
+                                widget.progressSegmentHeight,
+                                widget.progressSegmentBorderRadius),
+                      );
+                    },
+                  )
+                ],
+              ),
             ),
           ),
         ),
