@@ -14,7 +14,7 @@ typedef Duration MomentDurationGetter(int? index);
 /// moment progress and gap between each segment and returns widget for segment
 ///
 typedef Widget ProgressSegmentBuilder(BuildContext context, int index,
-    double progress, double gap, double height);
+    double progress, double gap, double height, double radius);
 
 ///
 /// Widget that allows you to use stories mechanism in your apps
@@ -57,6 +57,7 @@ class Story extends StatefulWidget {
     this.topOffset,
     this.fullscreen = true,
     this.progressSegmentHeight = 2.0,
+    this.progressSegmentBorderRadius = 1.0,
   })  : assert(momentCount > 0),
         assert(momentSwitcherFraction >= 0),
         assert(momentSwitcherFraction < double.infinity),
@@ -116,6 +117,11 @@ class Story extends StatefulWidget {
   final double progressSegmentHeight;
 
   ///
+  /// Sets the border radius of each progress segment
+  ///
+  final double progressSegmentBorderRadius;
+
+  ///
   /// Sets the duration for the progress bar show/hide animation
   ///
   final Duration progressOpacityDuration;
@@ -136,13 +142,13 @@ class Story extends StatefulWidget {
   final bool fullscreen;
 
   static Widget instagramProgressSegmentBuilder(BuildContext context, int index,
-          double progress, double gap, double height) =>
+          double progress, double gap, double height, double radius) =>
       Container(
         height: height,
         margin: EdgeInsets.symmetric(horizontal: gap / 2),
         decoration: BoxDecoration(
           color: Color(0x80ffffff),
-          borderRadius: BorderRadius.circular(1.0),
+          borderRadius: BorderRadius.circular(radius),
         ),
         child: FractionallySizedBox(
           alignment: Alignment.centerLeft,
@@ -295,7 +301,8 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
                                     idx,
                                     _controller.value,
                                     widget.progressSegmentGap,
-                                    widget.progressSegmentHeight);
+                                    widget.progressSegmentHeight,
+                                    widget.progressSegmentBorderRadius);
                               },
                             )
                           : widget.progressSegmentBuilder(
@@ -303,7 +310,8 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
                               idx,
                               idx < _currentIdx ? 1.0 : 0.0,
                               widget.progressSegmentGap,
-                              widget.progressSegmentHeight),
+                              widget.progressSegmentHeight,
+                              widget.progressSegmentBorderRadius),
                     );
                   },
                 )
