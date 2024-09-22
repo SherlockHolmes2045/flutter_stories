@@ -13,8 +13,8 @@ typedef Duration MomentDurationGetter(int? index);
 /// Builder function that accepts current build context, moment index,
 /// moment progress and gap between each segment and returns widget for segment
 ///
-typedef Widget ProgressSegmentBuilder(
-    BuildContext context, int index, double progress, double gap);
+typedef Widget ProgressSegmentBuilder(BuildContext context, int index,
+    double progress, double gap, double height);
 
 ///
 /// Widget that allows you to use stories mechanism in your apps
@@ -56,6 +56,7 @@ class Story extends StatefulWidget {
     this.startAt = 0,
     this.topOffset,
     this.fullscreen = true,
+    this.progressSegmentHeight = 2.0,
   })  : assert(momentCount > 0),
         assert(momentSwitcherFraction >= 0),
         assert(momentSwitcherFraction < double.infinity),
@@ -110,6 +111,11 @@ class Story extends StatefulWidget {
   final double progressSegmentGap;
 
   ///
+  /// Sets the height of each progress segment
+  ///
+  final double progressSegmentHeight;
+
+  ///
   /// Sets the duration for the progress bar show/hide animation
   ///
   final Duration progressOpacityDuration;
@@ -129,10 +135,10 @@ class Story extends StatefulWidget {
   ///
   final bool fullscreen;
 
-  static Widget instagramProgressSegmentBuilder(
-          BuildContext context, int index, double progress, double gap) =>
+  static Widget instagramProgressSegmentBuilder(BuildContext context, int index,
+          double progress, double gap, double height) =>
       Container(
-        height: 2.0,
+        height: height,
         margin: EdgeInsets.symmetric(horizontal: gap / 2),
         decoration: BoxDecoration(
           color: Color(0x80ffffff),
@@ -208,6 +214,7 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
 
   Future<void> _hideStatusBar() =>
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
+
   Future<void> _showStatusBar() =>
       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
           overlays: SystemUiOverlay.values);
@@ -284,11 +291,11 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
                               animation: _controller,
                               builder: (context, _) {
                                 return widget.progressSegmentBuilder(
-                                  context,
-                                  idx,
-                                  _controller.value,
-                                  widget.progressSegmentGap,
-                                );
+                                    context,
+                                    idx,
+                                    _controller.value,
+                                    widget.progressSegmentGap,
+                                    widget.progressSegmentHeight);
                               },
                             )
                           : widget.progressSegmentBuilder(
@@ -296,7 +303,7 @@ class _StoryState extends State<Story> with SingleTickerProviderStateMixin {
                               idx,
                               idx < _currentIdx ? 1.0 : 0.0,
                               widget.progressSegmentGap,
-                            ),
+                              widget.progressSegmentHeight),
                     );
                   },
                 )
